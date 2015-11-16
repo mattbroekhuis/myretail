@@ -32,6 +32,7 @@
         <spring.boot.version>1.2.7.RELEASE</spring.boot.version>
         <spring.version>4.2.2.RELEASE</spring.version>
         <groovy.version>2.4.4</groovy.version>
+        <cglib.nodep.version>3.2.0</cglib.nodep.version>
     </properties>
 
 
@@ -54,6 +55,12 @@
                 <artifactId>spock-core</artifactId>
                 <version>${spock.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <!-- mock non interfaces -->
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>${cglib.nodep.version}</version>
             </dependency>
 
             <dependency>
@@ -248,6 +255,12 @@
         <dependency>
             <groupId>org.spockframework</groupId>
             <artifactId>spock-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
             <scope>test</scope>
         </dependency>
 

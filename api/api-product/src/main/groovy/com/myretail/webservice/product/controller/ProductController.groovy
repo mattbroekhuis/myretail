@@ -1,9 +1,9 @@
 package com.myretail.webservice.product.controller
 
-import com.myretail.framework.exception.NotFound404Exception
 import com.myretail.webservice.product.dto.Price
 import com.myretail.webservice.product.dto.Product
 import com.myretail.webservice.product.entity.ProductPriceEntity
+import com.myretail.webservice.product.remote.RemoteProductApi
 import com.myretail.webservice.product.repository.ProductPriceRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
@@ -14,13 +14,25 @@ class ProductController {
     @Autowired
     ProductPriceRepository repository
 
+    @Autowired
+    RemoteProductApi remoteProductApi
+
+    /** do we throw a 404 if we don't have the pricing information? or output just the title? **/
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     Product get(@PathVariable String id) {
+        getOne(id)
+    }
+
+    Product getOne(String id) {
+        //throws exception if product doesn't exist
+        String productTitle = remoteProductApi.productTitle(id)
+        Product product = new Product(productId: id, name: productTitle)
+
         ProductPriceEntity productPriceEntity = repository.findByProductId(id)
-        if (!productPriceEntity) {
-            throw new NotFound404Exception()
+        if (productPriceEntity) {
+            product.current_price = new Price(currency_code: productPriceEntity.currencyCode, value: productPriceEntity.price)
         }
-        new Product(id: id, name: "fetch this", current_price: new Price(currency_code: productPriceEntity.currencyCode, value: productPriceEntity.price))
+        product
     }
 
     @RequestMapping(value = "/{id}/current_price", method = RequestMethod.PUT)
@@ -35,6 +47,4 @@ class ProductController {
 
         repository.save(productPriceEntity)
     }
-
-    //https://www.tgtappdata.com/v1/products/pdp/TCIN/13860427
 }

@@ -5,6 +5,7 @@ import com.myretail.webservice.product.dto.CurrencyCode
 import com.myretail.webservice.product.dto.Price
 import com.myretail.webservice.product.dto.Product
 import com.myretail.webservice.product.dto.Status
+import groovy.json.JsonSlurper
 import org.springframework.web.client.RestTemplate
 import spock.lang.Shared
 import spock.lang.Specification
@@ -17,6 +18,8 @@ class ProductControllerIT extends Specification {
     int port
     @Shared
     String urlBase
+    @Shared
+    List<String> knownRemoteProductIds
 
     def setupSpec() {
         if (System.getProperty("checkDockerEnvForHost")) {
@@ -26,6 +29,12 @@ class ProductControllerIT extends Specification {
         }
         port = Integer.parseInt(System.getProperty("integrationTest.servlet.port") ?: "8080")
         urlBase = "http://${host}:${port}"
+
+        //grab some product ids
+        knownRemoteProductIds = new JsonSlurper().parseText("https://www.tgtappdata.com/v1/products/list?searchTerm=big+lebowski".toURL().text).products.collect {
+            it.tcin
+        }
+
     }
 
     def "the server is up and running"() {
@@ -44,8 +53,12 @@ class ProductControllerIT extends Specification {
     }
 
     def "create some product prices"() {
+        given:
+        Collections.shuffle(knownRemoteProductIds)
+        String productId = knownRemoteProductIds[0]
         when:
         RestTemplate restTemplate = new RestTemplate();
+
         Price body = new Price(value: price, currency_code: currencyCode)
 
         restTemplate.put("$urlBase/product/${productId}/current_price", body)
@@ -53,13 +66,29 @@ class ProductControllerIT extends Specification {
         Product product = restTemplate.getForObject("$urlBase/product/${productId}", Product)
         then:
         noExceptionThrown()
-        product.id == productId
+        product.productId == productId
         product.current_price.value == price
         product.current_price.currency_code == currencyCode
+        product.name
         where:
-        productId | price  | currencyCode
-        "1"       | 50.00d | CurrencyCode.USD
-        "1"       | 50.00d | CurrencyCode.USD
-        "5"       | 50.00d | CurrencyCode.CAN
+        price  | currencyCode
+        50.00d | CurrencyCode.USD
+        50.00d | CurrencyCode.USD  //idempotent
+        80.00d | CurrencyCode.CAN
+    }
+
+
+    def "populate all for demo"() {
+        when:
+        RestTemplate restTemplate = new RestTemplate();
+        knownRemoteProductIds.each {
+            Price body = new Price(value: 100, currency_code: CurrencyCode.USD)
+
+            restTemplate.put("$urlBase/product/${it}/current_price", body)
+        }
+
+        then:
+        noExceptionThrown()
+
     }
 }

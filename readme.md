@@ -16,7 +16,7 @@ docker-machine create --driver=virtualbox --virtualbox-cpu-count "2" --virtualbo
 
 6. Run the build `mvn clean install` The first run of this build takes a long time as it downloads a lot of dependencies from both docker hub and maven central. Subsequent builds should come in around the 2 minute mark.
 7. After the build runs, it leaves it's integration test resources running so you can inspect their state. Execute the command `docker ps -a` again to see what is running (the -a includes things that are not running, but if the build worked everything should be running). You can access the api @ the docker host's ip address on port 3000. You can get the docker machine's ip by executing `docker-machine ip local`. eg 192.168.99.100:3000
-
+8. Access the api @ http://192.168.99.100:3000/product/13860428
 
 
 ### Running build in intellij
@@ -32,10 +32,11 @@ Running the build is fine, but a lot of times you want to rapidly start and rest
 I've actually gone through the exercise of opening up the debug port into the docker container -- and that does work -- but it's still faster to iterate when what you're working on is outside of docker
 
 We can still run any dependencies we may need in docker. In this case, the only dependency is cassandra.
-In order to do so, execute the script `restartCassandra.sh` located in this repo by right clicking on it and running in Intellij.
-
+In order to do so, execute the script `restartCassandra.sh` located in this repo by right clicking on it and running in Intellij. this starts up another instance of cassandra with default cql port 9042 open
 
 Then create a run config for Application.java and pass in two system properties (use docker-machine ip output from previous step) `-DCASSANDRA_PORT_9042_TCP_ADDR=192.168.99.100 -DCASSANDRA_PORT_9042_TCP_PORT=9042`
 
-
 Now, you have two environments. Your "local" one you iterate on for testing. And your "build one" that results from your maven commands. Also, this allows you to run the integration tests by simply right clicking on them in Intellij
+
+### Other notes
+instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname cassandra -> 192.168.99.100 . was considering doing this as part of the instructions, but oddly enough i've found a lot of companies lock out admin rights to their employees
