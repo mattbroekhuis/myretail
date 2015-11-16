@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <artifactId>api-product</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <parent>
+        <groupId>com.myretail</groupId>
+        <artifactId>api-superpom</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../api-superpom</relativePath>
+    </parent>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <INTEGRATION_TEST_HEAP_SIZE_MB>256</INTEGRATION_TEST_HEAP_SIZE_MB>
+        <CASSANDRA_CONTAINER_NAME>build-cassandra</CASSANDRA_CONTAINER_NAME>
+        <CASSANDRA_IMAGE_NAME>cassandra:2.2.3</CASSANDRA_IMAGE_NAME>
+        <CASSANDRA_PORT_9042_TCP_PORT>7000</CASSANDRA_PORT_9042_TCP_PORT>
+        <API_IMAGE_NAME>${project.artifactId}</API_IMAGE_NAME>
+        <API_CONTAINER_NAME>build-${project.artifactId}</API_CONTAINER_NAME>
+        <API_REST_PORT>3000</API_REST_PORT>
+        <API_STATUS_PATH>/status</API_STATUS_PATH>
+    </properties>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+            </plugin>
+            <!--todo exec maven plugin is swallowing logging output somehow, and I don't know why -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.myretail</groupId>
+                        <artifactId>framework-docker</artifactId>
+                        <version>1.0-SNAPSHOT</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <includeProjectDependencies>false</includeProjectDependencies>
+                    <includePluginDependencies>true</includePluginDependencies>
+                    <executableDependency>
+                        <groupId>com.myretail</groupId>
+                        <artifactId>framework-docker</artifactId>
+                    </executableDependency>
+                </configuration>
+                <executions>
+                    <!-- integration test -->
+                    <execution>
+                        <id>start-env</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipTests}</skip>
+                            <mainClass>com.myretail.framework.docker.startEnvironment</mainClass>
+                            <systemProperties>
+                                <systemProperty>
+                                    <key>CASSANDRA_CONTAINER_NAME</key>
+                                    <value>${CASSANDRA_CONTAINER_NAME}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>CASSANDRA_IMAGE_NAME</key>
+                                    <value>${CASSANDRA_IMAGE_NAME}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>CASSANDRA_PORT_9042_TCP_PORT</key>
+                                    <value>${CASSANDRA_PORT_9042_TCP_PORT}</value>
+                                </systemProperty>
+
+                                <systemProperty>
+                                    <key>API_IMAGE_NAME</key>
+                                    <value>${API_IMAGE_NAME}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>API_CONTAINER_NAME</key>
+                                    <value>${API_CONTAINER_NAME}</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <key>API_REST_PORT</key>
+                                    <value>${API_REST_PORT}</value>
+                                </systemProperty>
+                            </systemProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <integrationTest.servlet.host>${API_CONTAINER_NAME}</integrationTest.servlet.host>
+                        <integrationTest.servlet.port>${API_REST_PORT}</integrationTest.servlet.port>
+                    </systemPropertyVariables>
+                    <argLine>-Xmx${INTEGRATION_TEST_HEAP_SIZE_MB}m</argLine>
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
