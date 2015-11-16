@@ -101,7 +101,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
                     <systemPropertyVariables>
-                        <integrationTest.servlet.host>${API_CONTAINER_NAME}</integrationTest.servlet.host>
+                        <checkDockerEnvForHost>true</checkDockerEnvForHost>
                         <integrationTest.servlet.port>${API_REST_PORT}</integrationTest.servlet.port>
                     </systemPropertyVariables>
                 </configuration>

@@ -36,13 +36,16 @@ class ExtendedDockerClientImpl implements ExtendedDockerClient {
         }
     }
 
-
-    @Override
-    public String dockerHostIP() {
+    public static String getDockerHostIP() {
         String withProtocolAndPort = Preconditions.checkNotNull(System.getenv("DOCKER_HOST"), "You must set DOCKER_HOST!", null)
         String plainIp = StringUtils.substringBefore(StringUtils.substringAfter(withProtocolAndPort, "tcp://"), ":")
         Preconditions.checkArgument(InetAddressValidator.instance.isValid(plainIp), "Ip address %s is not valid!", plainIp)
         plainIp
+    }
+
+    @Override
+    public String dockerHostIP() {
+        getDockerHostIP()
     }
 
     @Override

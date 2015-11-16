@@ -39,12 +39,12 @@ docker.createAndStart(apiContainerConfig, apiContainerName)
 
 docker.waitForURL("http", docker.dockerHostIP(), apiExposedRestPort, "/status", 30)
 
-logger.info("Closing docker client connection (need to figure out why this is taking so long, probably connection pool)")
+logger.info("Closing docker client connection")
 
 //this takes way too long
 docker.close()
 
-logger.info("Environment Initialized")
+logger.info("Environment Initialized. Something is causing maven to hang here for some weird reason, need to figure out why, but it eventually gets through it. I think it is jersey in spotify client taking a long time to close connections")
 
 
 static Map<String, List<PortBinding>> getPortBindingsVendorToExposed(Map<Integer, Integer> portBindings) {

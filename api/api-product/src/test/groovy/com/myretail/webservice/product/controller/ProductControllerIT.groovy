@@ -1,5 +1,6 @@
 package com.myretail.webservice.product.controller
 
+import com.myretail.framework.docker.ExtendedDockerClientImpl
 import com.myretail.webservice.product.dto.CurrencyCode
 import com.myretail.webservice.product.dto.Price
 import com.myretail.webservice.product.dto.Product
@@ -11,16 +12,33 @@ import spock.lang.Specification
 
 class ProductControllerIT extends Specification {
     @Shared
-    String host = System.getenv("integrationTest.servlet.host") ?: "localhost"
+    String host
     @Shared
-    int port = System.getenv("integrationTest.servlet.port") ?: "8080" as int
+    int port
     @Shared
-    String urlBase = "http://${host}:${port}"
+    String urlBase
+
+    def setupSpec() {
+        if (System.getProperty("checkDockerEnvForHost")) {
+            host = ExtendedDockerClientImpl.dockerHostIP
+        } else {
+            host = System.getProperty("integrationTest.servlet.host") ?: "localhost"
+        }
+        port = Integer.parseInt(System.getProperty("integrationTest.servlet.port") ?: "8080")
+        urlBase = "http://${host}:${port}"
+    }
 
     def "the server is up and running"() {
         when:
         RestTemplate restTemplate = new RestTemplate();
-        Status status = restTemplate.getForObject("${urlBase}/status", Status)
+        Status status = null;
+        try {
+            status = restTemplate.getForObject("${urlBase}/status", Status)
+        } catch (Exception e) {
+            println "unable to access the app server @ ${urlBase}/status are the environment variables set right?"
+            e.printStackTrace()
+        }
+
         then:
         status
     }
