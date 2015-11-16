@@ -7,7 +7,7 @@
 ### Build instructions
 1. Install Java and Maven. Easiest way on OSX is to get [homebrew](http://brew.sh/) and use it.  [Java install](http://stackoverflow.com/questions/24342886/how-to-install-java-8-on-mac) [Maven install](http://stackoverflow.com/a/17481557/412366)
 2. Get docker-machine via the [Docker tool box](https://www.docker.com/docker-toolbox)
-3. Initiate a docker-machine by running a command like below. I have 16gb of ram (hopefully you do too) and use docker all the time so I like a big memory capacity, you can get away with less likely. The last argument is the name of the machine. I use the name "local" . You will use this name for subsequent docker-machine commands
+3. Initiate a docker-machine by running a command like below. I have 16gb of ram (hopefully you do too) and use docker all the time so I like a big memory capacity, you can get away with much less if you choose. The last argument is the name of the machine. I use the name "local" . You will use this name for subsequent docker-machine commands
 ```bash
 docker-machine create --driver=virtualbox --virtualbox-cpu-count "2" --virtualbox-memory "8000" --virtualbox-cpu-count "4" --virtualbox-disk-size "40000" local
 ```
@@ -39,4 +39,4 @@ Then create a run config for Application.java and pass in two system properties 
 Now, you have two environments. Your "local" one you iterate on for testing. And your "build one" that results from your maven commands. Also, this allows you to run the integration tests by simply right clicking on them in Intellij
 
 ### Other notes
-instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname cassandra -> 192.168.99.100 . was considering doing this as part of the instructions, but oddly enough i've found a lot of companies lock out admin rights to their employees
+Instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname cassandra -> 192.168.99.100 . was considering doing this as part of the instructions, but oddly enough I've found a lot of companies lock out admin rights to their employees, so didn't want to count on it
