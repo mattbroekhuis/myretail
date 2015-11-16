@@ -6,8 +6,6 @@ import com.spotify.docker.client.messages.PortBinding
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-import java.util.concurrent.TimeUnit
-
 ExtendedDockerClient docker = DockerConnectionFactory.instance
 
 Logger logger = LoggerFactory.getLogger(startEnvironment)
@@ -21,7 +19,8 @@ String cassandraImageName = getRequiredProp('CASSANDRA_IMAGE_NAME')
 Integer cassandraExposedPort = getRequiredIntProp("CASSANDRA_PORT_9042_TCP_PORT")
 
 /** Cassandra **/
-HostConfig cassandraHostConfig = HostConfig.builder().portBindings(getPortBindingsVendorToExposed([(9042): cassandraExposedPort])).build()
+//todo, opening up the external port is screwing up the format of the cassandra.yml file
+//HostConfig cassandraHostConfig = HostConfig.builder().portBindings(getPortBindingsVendorToExposed([(9042): cassandraExposedPort])).build()
 ContainerConfig cassandraContainerConfig = ContainerConfig.builder().image(cassandraImageName).build()
 
 /** API **/
@@ -35,7 +34,7 @@ docker.destroyContainer(apiContainerName)
 /** start containers **/
 docker.createAndStart(cassandraContainerConfig, cassandraContainerName)
 
-Thread.sleep(15000)
+Thread.sleep(15000) //todo this most definitely needs to be updated to query cassandra and check that it's "alive". The driver the app server is using does not handle waiting for it well at all.
 docker.createAndStart(apiContainerConfig, apiContainerName)
 
 docker.waitForURL("http", docker.dockerHostIP(), apiExposedRestPort, "/status", 30)
@@ -43,7 +42,7 @@ docker.waitForURL("http", docker.dockerHostIP(), apiExposedRestPort, "/status", 
 logger.info("Closing docker client connection (need to figure out why this is taking so long, probably connection pool)")
 
 //this takes way too long
-//docker.close()
+docker.close()
 
 logger.info("Environment Initialized")
 

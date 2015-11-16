@@ -1,7 +1,6 @@
 CREATE TABLE product_price (
-  id text,
-  currencyCode text,
   productId text,
+  currencyCode text,
   price double,
-  PRIMARY KEY (id)
+  PRIMARY KEY (productId)
 )

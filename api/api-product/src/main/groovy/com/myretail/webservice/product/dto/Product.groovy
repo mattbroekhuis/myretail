@@ -1,7 +1,7 @@
 package com.myretail.webservice.product.dto
 
 class Product {
-    long id
+    String id
     String name
     Price current_price
 }

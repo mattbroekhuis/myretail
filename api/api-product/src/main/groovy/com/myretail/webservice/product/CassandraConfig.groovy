@@ -1,8 +1,6 @@
 package com.myretail.webservice.product
 
 import com.datastax.driver.core.Session
-import com.google.common.base.Preconditions
-import org.apache.commons.lang3.StringUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cassandra.config.java.AbstractCqlTemplateConfiguration
 import org.springframework.cassandra.core.keyspace.CreateKeyspaceSpecification
@@ -10,9 +8,10 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.env.Environment
 import org.springframework.data.cassandra.core.CassandraTemplate
+import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories
 
 @Configuration
-//@EnableCassandraRepositories(basePackages = ["com.myretail"])
+@EnableCassandraRepositories(basePackages = ["com.myretail"])
 class CassandraConfig extends AbstractCqlTemplateConfiguration {
 
     @Autowired

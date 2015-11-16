@@ -1,25 +1,39 @@
 package com.myretail.webservice.product.controller
 
-import com.myretail.webservice.product.dto.CurrencyCode
+import com.myretail.framework.exception.NotFound404Exception
 import com.myretail.webservice.product.dto.Price
 import com.myretail.webservice.product.dto.Product
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import com.myretail.webservice.product.entity.ProductPriceEntity
+import com.myretail.webservice.product.repository.ProductPriceRepository
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/product")
 class ProductController {
-//    @Autowired
-//    ProductPriceDao productDao
+    @Autowired
+    ProductPriceRepository repository
 
-    @RequestMapping("/{id}")
-    public Product one(@PathVariable long id) {
-        //call external api and populate
-        String name = "Super sweet product"
-        Price price = new Price([value: 50, currency_code: CurrencyCode.USD])
-        Product product = new Product([id: id, name: name, current_price: price])
-        product
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    Product get(@PathVariable String id) {
+        ProductPriceEntity productPriceEntity = repository.findByProductId(id)
+        if (!productPriceEntity) {
+            throw new NotFound404Exception()
+        }
+        new Product(id: id, name: "fetch this", current_price: new Price(currency_code: productPriceEntity.currencyCode, value: productPriceEntity.price))
+    }
+
+    @RequestMapping(value = "/{id}/current_price", method = RequestMethod.PUT)
+    void putPrice(@PathVariable String id, @RequestBody Price price) {
+        ProductPriceEntity productPriceEntity = repository.findByProductId(id)
+        if (productPriceEntity) {
+            productPriceEntity.price = price.value
+            productPriceEntity.currencyCode = price.currency_code
+        } else {
+            productPriceEntity = new ProductPriceEntity(productId: id, price: price.value, currencyCode: price.currency_code)
+        }
+
+        repository.save(productPriceEntity)
     }
 
     //https://www.tgtappdata.com/v1/products/pdp/TCIN/13860427

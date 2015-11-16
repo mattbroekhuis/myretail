@@ -15,21 +15,7 @@
         <relativePath>../api-superpom</relativePath>
     </parent>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <!-- Import dependency management from Spring Boot -->
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring.boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <properties>
-        <INTEGRATION_TEST_HEAP_SIZE_MB>256</INTEGRATION_TEST_HEAP_SIZE_MB>
         <CASSANDRA_CONTAINER_NAME>build-cassandra</CASSANDRA_CONTAINER_NAME>
         <CASSANDRA_IMAGE_NAME>cassandra:2.2.3</CASSANDRA_IMAGE_NAME>
         <CASSANDRA_PORT_9042_TCP_PORT>7000</CASSANDRA_PORT_9042_TCP_PORT>
@@ -118,7 +104,6 @@
                         <integrationTest.servlet.host>${API_CONTAINER_NAME}</integrationTest.servlet.host>
                         <integrationTest.servlet.port>${API_REST_PORT}</integrationTest.servlet.port>
                     </systemPropertyVariables>
-                    <argLine>-Xmx${INTEGRATION_TEST_HEAP_SIZE_MB}m</argLine>
                 </configuration>
             </plugin>
 
