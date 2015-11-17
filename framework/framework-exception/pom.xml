@@ -12,9 +12,13 @@
     </parent>
 
     <artifactId>framework-exception</artifactId>
-    <version>1.0-SNAPSHOT</version>
 
     <dependencies>
+        <dependency>
+            <groupId>com.myretail</groupId>
+            <artifactId>framework-logging</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>

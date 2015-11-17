@@ -21,22 +21,27 @@ docker-machine create --driver=virtualbox --virtualbox-cpu-count "2" --virtualbo
 
 ### Running build in intellij
 The maven build uses the [spotify docker client](https://github.com/spotify/docker-client)
-The spotify client is simply a java client of the docker rest api. The benefit of this is not having to make native system calls to the docker executable from the build process. You can then use groovy instead of bash scripts etc
+The spotify client is simply a java client of the docker rest api. The benefit of this is not having to make native system calls to the docker executable from the build process. You can then use groovy instead of bash scripts.
 Since docker is running in a VM when you use docker-machine, the spotify client will look for an environment variables DOCKER_HOST and DOCKER_CERT_PATH. These environment variables should be set by docker-machine. If they aren't you can run `eval "$(docker-machine env local)"` I put this line in my .bash_profile
 If you attempt to run the build in intellij via the maven plugin you will have to set these variables yourself in intellij configuration, or alternatively launch intellij from the shell so they are inherited (Another thing I put in my .bash_profile) `alias idea="/Applications/IntelliJ\ IDEA\ 15.app/Contents/MacOS/idea &"` (adjust for your version)
 
 
 
 ### General dev instructions (assuming Intellij is used)
-Running the build is fine, but a lot of times you want to rapidly start and restart the services, debug them etc.
+Running the build is fine, but a lot of times you want to rapidly start and restart the api services, debug them etc.
 I've actually gone through the exercise of opening up the debug port into the docker container -- and that does work -- but it's still faster to iterate when what you're working on is outside of docker
 
 We can still run any dependencies we may need in docker. In this case, the only dependency is cassandra.
-In order to do so, execute the script `restartCassandra.sh` located in this repo by right clicking on it and running in Intellij. this starts up another instance of cassandra with default cql port 9042 open
+In order to do so, execute the script `restartCassandra.sh` located in this repo by right clicking on it and running in Intellij. this starts up another instance of cassandra with default cql port 9042 open.
+Since we are running just the base image, it will have no data. I included a library that will manage schema changes in a similar way to [Flyway](http://flywaydb.org/) . The .cql files are located in the api module, under the resources directory.
+Any .cql file in this directory will be run on app startup. The library creates a schema version table in cassandra to keep track of what .cql files it has run. This gives you a "version controlled" schema.
 
-Then create a run config for Application.java and pass in two system properties (use docker-machine ip output from previous step) `-DCASSANDRA_PORT_9042_TCP_ADDR=192.168.99.100 -DCASSANDRA_PORT_9042_TCP_PORT=9042`
+To run the api services locally, make an intellij run config for Application.java and pass in two system properties (use docker-machine ip output from previous step) `-DCASSANDRA_PORT_9042_TCP_ADDR=192.168.99.100 -DCASSANDRA_PORT_9042_TCP_PORT=9042`
 
-Now, you have two environments. Your "local" one you iterate on for testing. And your "build one" that results from your maven commands. Also, this allows you to run the integration tests by simply right clicking on them in Intellij
+Now, you have two environments. Your "local" one you iterate on for testing. And your "build one" that results from your maven commands. Also, this allows you to run the integration tests by simply right clicking on them in Intellij, which I find useful for quickly interacting with the services in a "live" state.
 
 ### Other notes
-Instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname cassandra -> 192.168.99.100 . was considering doing this as part of the instructions, but oddly enough I've found a lot of companies lock out admin rights to their employees, so didn't want to count on it
+Instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname "cassandra" -> 192.168.99.100 . Was considering doing this as part of the base setup, but oddly enough I've found a lot of companies lock out admin rights to their employees, so didn't want to count on it
+If this were a "real" setup, and there were large teams working on many services, I would consider making the framework grouping of code be in it's own repository, and versioned seperately. I would also consider making each service a seperate repository as well.
+
+Hope the instructions work well, and there's no "magic" setting on my machine that isn't on yours. Thanks for checking it out

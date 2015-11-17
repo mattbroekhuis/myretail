@@ -4,16 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-
-    <artifactId>api-product</artifactId>
-    <version>1.0-SNAPSHOT</version>
-
     <parent>
         <groupId>com.myretail</groupId>
         <artifactId>framework-microservice-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../../framework/framework-microservice-parent</relativePath>
     </parent>
+
+    <artifactId>api-product</artifactId>
+    <version>1.0-SNAPSHOT</version>
 
     <properties>
         <CASSANDRA_CONTAINER_NAME>build-cassandra</CASSANDRA_CONTAINER_NAME>
@@ -39,7 +38,7 @@
                     <dependency>
                         <groupId>com.myretail</groupId>
                         <artifactId>framework-docker</artifactId>
-                        <version>1.0-SNAPSHOT</version>
+                        <version>${project.parent.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
