@@ -42,6 +42,9 @@ Now, you have two environments. Your "local" one you iterate on for testing. And
 
 ### Other notes
 Instead of passing around ip addresses, I typically will update the local /etc/hosts to make aliases for the dependencies to the docker host. eg add an entry for hostname "cassandra" -> 192.168.99.100 . Was considering doing this as part of the base setup, but oddly enough I've found a lot of companies lock out admin rights to their employees, so didn't want to count on it
+
 If this were a "real" setup, and there were large teams working on many services, I would consider making the framework grouping of code be in it's own repository, and versioned seperately. I would also consider making each service a seperate repository as well.
+
+I actually think that gradle would be a better choice for a build tool. Especially with docker. The pom files know/contain too much about ports and hosts and ips. It is hard in Maven to do custom work like fire up a docker container in one step, inspect it and get all the host information dynamically and pass it to another step. However, for the sake of making sure I actually finished this task, I stuck with maven as I know it well.
 
 Hope the instructions work well, and there's no "magic" setting on my machine that isn't on yours. Thanks for checking it out
