@@ -19,7 +19,6 @@
         <dependency>
             <groupId>com.contrastsecurity</groupId>
             <artifactId>cassandra-migration</artifactId>
-            <version>0.5</version>
         </dependency>
 
         <dependency>
