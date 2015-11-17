@@ -1,6 +1,6 @@
 package com.myretail.webservice.product.controller
 
-import com.myretail.webservice.product.dto.CurrencyCode
+import com.myretail.webservice.product.enumeration.CurrencyCode
 import com.myretail.webservice.product.entity.ProductPriceEntity
 import com.myretail.webservice.product.remote.RemoteProductApi
 import com.myretail.webservice.product.repository.ProductPriceRepository

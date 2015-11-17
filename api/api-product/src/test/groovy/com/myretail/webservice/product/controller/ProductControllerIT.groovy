@@ -1,7 +1,7 @@
 package com.myretail.webservice.product.controller
 
 import com.myretail.framework.docker.ExtendedDockerClientImpl
-import com.myretail.webservice.product.dto.CurrencyCode
+import com.myretail.webservice.product.enumeration.CurrencyCode
 import com.myretail.webservice.product.dto.Price
 import com.myretail.webservice.product.dto.Product
 import com.myretail.webservice.product.dto.Status

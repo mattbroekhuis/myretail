@@ -1,6 +1,7 @@
-package com.myretail.webservice.product
+package com.myretail.framework.cassandra
 
 import com.datastax.driver.core.Session
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.cassandra.config.java.AbstractCqlTemplateConfiguration
 import org.springframework.cassandra.core.keyspace.CreateKeyspaceSpecification
@@ -19,7 +20,7 @@ class CassandraConfig extends AbstractCqlTemplateConfiguration {
 
     @Override
     protected String getKeyspaceName() {
-        return "product"
+        return env.getRequiredProperty("module.name")
     }
 
     @Override
@@ -40,5 +41,10 @@ class CassandraConfig extends AbstractCqlTemplateConfiguration {
     @Override
     protected List<CreateKeyspaceSpecification> getKeyspaceCreations() {
         [new CreateKeyspaceSpecification(getKeyspaceName()).ifNotExists()]
+    }
+
+    @Bean
+    CassandraMigrationRunner migrationRunner() {
+        new CassandraMigrationRunner()
     }
 }

@@ -23,7 +23,7 @@ class CassandraMigrationRunner implements ApplicationListener<ContextRefreshedEv
 
     void migrate() {
         logger.info("Applying Cassandra Migrations")
-        String module = environment.getProperty("module.key", "product")
+        String module = environment.getRequiredProperty("module.name")
         String host = environment.getRequiredProperty("CASSANDRA_PORT_9042_TCP_ADDR")
         Integer port = environment.getRequiredProperty("CASSANDRA_PORT_9042_TCP_PORT") as Integer
         String username = environment.getProperty("CASSANDRA_USERNAME", "cassandra")
