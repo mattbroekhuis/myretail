@@ -16,6 +16,7 @@
         <module>framework-logging</module>
         <module>framework-cassandra</module>
         <module>framework-exception</module>
+        <module>framework-microservice-parent</module>
     </modules>
 
 

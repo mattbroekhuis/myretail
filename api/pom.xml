@@ -12,7 +12,6 @@
 
     <modules>
         <module>api-product</module>
-        <module>api-superpom</module>
     </modules>
 
 

@@ -10,9 +10,9 @@
 
     <parent>
         <groupId>com.myretail</groupId>
-        <artifactId>api-superpom</artifactId>
+        <artifactId>framework-microservice-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
-        <relativePath>../api-superpom</relativePath>
+        <relativePath>../../framework/framework-microservice-parent</relativePath>
     </parent>
 
     <properties>
