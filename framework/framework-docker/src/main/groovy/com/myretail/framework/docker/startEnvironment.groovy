@@ -34,7 +34,7 @@ docker.destroyContainer(apiContainerName)
 /** start containers **/
 docker.createAndStart(cassandraContainerConfig, cassandraContainerName)
 
-Thread.sleep(15000) //todo this most definitely needs to be updated to query cassandra and check that it's "alive". The driver the app server is using does not handle waiting for it well at all.
+Thread.sleep(30000) //todo this most definitely needs to be updated to query cassandra and check that it's "alive". The driver the app server is using does not handle waiting for it well at all.
 docker.createAndStart(apiContainerConfig, apiContainerName)
 
 docker.waitForURL("http", docker.dockerHostIP(), apiExposedRestPort, "/status", 30)
